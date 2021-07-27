@@ -1,0 +1,61 @@
+
+
+@mixin margin($direction, $value){
+  @if($direction == 'auto'){
+    margin: $value unquote($direction);
+  }
+  @else if($direction == '' or $direction == null) {
+    margin: $value;
+  }
+  @else {
+    margin-#{unquote($direction)}: $value;
+  }
+}
+
+@mixin border-radius($radius, $side:false){
+  @if($side == 'left'){
+    border-bottom-left-radius: $radius;
+    border-top-left-radius: $radius;
+  }
+  @else if($side == 'right'){
+    border-bottom-right-radius: $radius;
+    border-top-right-radius: $radius;
+  }
+  @else if($side == 'right-bottom'){
+    border-bottom-right-radius: $radius;
+  }
+  @else if($side == 'right-top'){
+    border-bottom-right-radius: $radius;
+    border-top-right-radius: $radius;
+  }
+  @else {
+    border-radius: $radius;
+  }
+}
+
+@function setFontSizeRem($base, $size){
+  $sizeRem:0;
+  $r:$base / ($base * 0 + 1);
+  @warn "Function will return 'rem' units";
+  @return $size / $r * 1rem;
+}
+
+@function setBorderRadius ($prop) {
+  $border-top-right-radius: 0;
+  $border-top-left-radius: 0;
+  $border-bottom-left-radius: 0;
+  $border-bottom-right-radius: 0;
+  $defaultRadii: ($border-top-right-radius, $border-top-left-radius, $border-bottom-left-radius, $border-bottom-right-radius);
+
+  $setRadii: ();
+  @for $i from 1 through length($defaultRadii) {
+    $r: null;
+    @if $i <= length($prop) {
+      $r: nth($prop, $i)
+    } @else {
+      $p: nth($defaultRadii, $i)
+    }
+    $setRadii: append($setRadii, $r);
+  }
+  @return $setRadii;
+}
