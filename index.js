@@ -27,14 +27,18 @@ class Game {
     this.data = data;
     this.counter = counter;
     this.moves = moves;
-    this.timer = { min: 0, sec: 0 };
+    this.gameIsOn = false;
+    this.countDownIsOn = false;
   }
 
   shuffleArray(arr) {
-    return arr
-      .map((a) => [Math.random(), a])
-      .sort((a, b) => a[0] - b[0])
-      .map((a) => a[1]);
+    for (let i = arr.length - 1; i > 0; i--) {
+      let j = Math.floor(Math.random() * (i + 1));
+      let temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+    return arr;
   }
 
   renderCards = () => {
@@ -67,7 +71,6 @@ class Game {
     this.turnCard();
     this.checkMatch();
     this.countMoves();
-    this.showCountDown();
     this.resetField();
   };
 
@@ -75,6 +78,9 @@ class Game {
     let container = document.getElementsByClassName("section")[0];
     container.addEventListener("click", function (ev) {
       let card = ev.target.closest(".section__card");
+      game.countDownIsOn = true;
+      game.gameIsOn = true;
+      if (!game.gameIsOn && !game.countDownIsOn) game.startCountDown(1 * 60);
 
       if (!card) return;
 
@@ -163,45 +169,62 @@ class Game {
     this.interval = setInterval(function () {
       minutes = parseInt(String(timer / 60), 10);
       seconds = parseInt(String(timer % 60), 10);
-
       minutes = (minutes < 10 ? "0" : "") + String(minutes);
       seconds = (seconds < 10 ? "0" : "") + String(seconds);
 
       display.textContent = minutes + ":" + seconds;
 
-      game.gameIsOn = true;
-      game.timer.min = parseInt(minutes);
-      game.timer.sec = parseInt(seconds);
-
-      timer--;
+      if (game.gameIsOn === false && game.countDownIsOn === false) {
+        display.textContent = minutes + ":" + seconds;
+        return;
+      }
+      console.log("game status:" + game.gameIsOn);
+      console.log(timer);
       if (timer < 0) {
         timer = 0;
+        game.gameIsOn = false;
+        game.countDownIsOn = false;
+        clearInterval(game.interval);
+      }
+      --timer;
+      if (timer === 0) {
+        timer = 0;
+        game.gameIsOn = false;
+        game.countDownIsOn = false;
         clearInterval(game.interval);
       }
     }, 1000);
   };
 
-  showCountDown = () => {};
-
   checkResult = () => {
-    let { sec, min } = this.timer;
     let win;
     let matchCards = Array.from(
       document.getElementsByClassName("section__card_match")
     );
-
-    if (matchCards.length === game.cardsArray.length && sec > 0) {
+    let turnedCards = Array.from(
+      document.getElementsByClassName("section__card_turned")
+    );
+    if (
+      matchCards.length === game.cardsArray.length &&
+      game.gameIsOn === true &&
+      game.countDownIsOn === true //выиграли в рамках игрового времени
+    ) {
       win = true;
-      console.log(sec);
-      console.log(win);
       this.showModal(win);
+      game.gameIsOn = false;
+      game.countDownIsOn = false;
       clearInterval(game.interval);
     }
-    if (matchCards.length < game.cardsArray.length && sec === 0 && min === 0) {
+    if (
+      matchCards.length < game.cardsArray.length &&
+      game.gameIsOn === false &&
+      game.countDownIsOn === true
+    ) {
+      //проиграли в рамках игрового времени
       win = false;
-      console.log(sec);
-      console.log(win);
       this.showModal(win);
+      game.gameIsOn = false;
+      game.countDownIsOn = false;
       clearInterval(game.interval);
     }
   };
