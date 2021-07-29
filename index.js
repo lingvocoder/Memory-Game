@@ -78,9 +78,9 @@ class Game {
     let container = document.getElementsByClassName("section")[0];
     container.addEventListener("click", function (ev) {
       let card = ev.target.closest(".section__card");
-      game.countDownIsOn = true;
+
       game.gameIsOn = true;
-      if (!game.gameIsOn && !game.countDownIsOn) game.startCountDown(1 * 60);
+      game.countDownIsOn = true;
 
       if (!card) return;
 
@@ -161,39 +161,41 @@ class Game {
   countMoves = () => this.moves++;
 
   startCountDown = (duration) => {
-    let timer = duration,
+    let start = Date.now(),
+      diff,
       minutes,
       seconds;
-    let display = document.getElementsByClassName("main__timer")[0];
 
-    this.interval = setInterval(function () {
-      minutes = parseInt(String(timer / 60), 10);
-      seconds = parseInt(String(timer % 60), 10);
-      minutes = (minutes < 10 ? "0" : "") + String(minutes);
-      seconds = (seconds < 10 ? "0" : "") + String(seconds);
-
-      display.textContent = minutes + ":" + seconds;
-
+    function timer() {
+      let display = document.getElementsByClassName("main__timer")[0];
       if (game.gameIsOn === false && game.countDownIsOn === false) {
         display.textContent = minutes + ":" + seconds;
-        return;
       }
-      console.log("game status:" + game.gameIsOn);
-      console.log(timer);
-      if (timer < 0) {
-        timer = 0;
+      diff = duration - (((Date.now() - start) / 1000) | 0);
+
+      minutes = (diff / 60) | 0;
+      seconds = diff % 60 | 0;
+
+      minutes = minutes < 10 ? "0" + minutes : minutes;
+      seconds = seconds < 10 ? "0" + seconds : seconds;
+
+      display.textContent = minutes + ":" + seconds;
+      console.log(
+        `game:${game.gameIsOn} countDown:${game.countDownIsOn} timer: ${diff}`
+      );
+
+      if (diff <= 0) {
+        minutes = 0;
+        seconds = 0;
         game.gameIsOn = false;
         game.countDownIsOn = false;
-        clearInterval(game.interval);
+        start = Date.now() + 1000;
+        clearInterval(timer);
       }
-      --timer;
-      if (timer === 0) {
-        timer = 0;
-        game.gameIsOn = false;
-        game.countDownIsOn = false;
-        clearInterval(game.interval);
-      }
-    }, 1000);
+    }
+
+    timer();
+    setInterval(timer, 1000);
   };
 
   checkResult = () => {
@@ -211,21 +213,21 @@ class Game {
     ) {
       win = true;
       this.showModal(win);
-      game.gameIsOn = false;
-      game.countDownIsOn = false;
-      clearInterval(game.interval);
+      // game.gameIsOn = false;
+      // game.countDownIsOn = false;
+      clearInterval(game.timer);
     }
     if (
       matchCards.length < game.cardsArray.length &&
       game.gameIsOn === false &&
-      game.countDownIsOn === true
+      game.countDownIsOn === false
     ) {
       //проиграли в рамках игрового времени
       win = false;
       this.showModal(win);
-      game.gameIsOn = false;
-      game.countDownIsOn = false;
-      clearInterval(game.interval);
+      // game.gameIsOn = false;
+      // game.countDownIsOn = false;
+      clearInterval(game.timer);
     }
   };
 
@@ -323,3 +325,41 @@ function countDown() {
   //   timer();
   //   setInterval(timer, 1000);
 }
+
+// let start = Date.now(),
+//     diff,
+//     minutes,
+//     seconds;
+//
+// this.timer = setInterval(function () {
+//   game.countDownIsOn = true;
+//   game.gameIsOn = true;
+//   let display = document.getElementsByClassName("main__timer")[0];
+//
+//   if (game.gameIsOn === false && game.countDownIsOn === false) {
+//     display.textContent = minutes + ":" + seconds;
+//   }
+//   diff = duration - (((Date.now() - start) / 1000) | 0);
+//
+//   minutes = (diff / 60) | 0;
+//   seconds = diff % 60 | 0;
+//
+//   minutes = minutes < 10 ? "0" + minutes : minutes;
+//   seconds = seconds < 10 ? "0" + seconds : seconds;
+//
+//   display.textContent = minutes + ":" + seconds;
+//   console.log(game.gameIsOn + ":" + diff);
+//
+//   if (diff <= 0) {
+//     add one second so that the count down starts at the full duration
+//     example 05:00 not 04:59
+// minutes = 0;
+// seconds = 0;
+// start = Date.now() + 1000;
+// clearInterval(game.timer);
+// game.checkResult();
+// game.gameIsOn = false;
+// game.countDownIsOn = false;
+// console.log(game.gameIsOn + ":" + game.gameIsOn + ":" + diff);
+// }
+// }, 1000);
