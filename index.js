@@ -4,6 +4,7 @@ class Card {
     this.emoji = emoji;
     this.index = index;
     this.render();
+    this.handleClick();
   }
 
   get template() {
@@ -19,6 +20,32 @@ class Card {
     const element = document.createElement("div");
     element.innerHTML = this.template;
     this.element = element.firstElementChild;
+  }
+
+  turnCard(ev) {
+    let currentCard = ev.target.closest(".section__card");
+    game.gameIsOn = true;
+    game.countDownIsOn = true;
+
+    if (!currentCard) return;
+    currentCard.classList.toggle("section__card_turned");
+
+    if (currentCard.classList.contains("section__card_turned")) {
+      game.increaseCounter();
+      game.countMoves();
+      const { counter } = game;
+      currentCard.children[1].setAttribute("data-index", String(counter));
+    } else {
+      game.decreaseCounter();
+      const { counter } = game;
+      currentCard.children[1].setAttribute("data-index", String(counter));
+    }
+  }
+
+  handleClick() {
+    let container = document.getElementsByClassName("section")[0];
+    container.addEventListener("click", this.turnCard);
+    container.addEventListener("click", game.checkMatch);
   }
 }
 
@@ -41,6 +68,32 @@ class Game {
     return arr;
   }
 
+  increaseCounter = () => this.counter++;
+
+  decreaseCounter = () => this.counter--;
+
+  setCounter = (value) => (this.counter = value);
+
+  countMoves = () => this.moves++;
+
+  updateCurrentCard = (card) => {
+    card.children[1].setAttribute("data-index", this.setCounter(1));
+  };
+
+  updateTurnedCards = (cardsArray, clsArray) => {
+    let cls = clsArray || undefined;
+    if (cls) {
+      cardsArray.forEach((card) => {
+        card.children[1].setAttribute("data-index", this.setCounter(0));
+        card.classList.remove(...cls);
+      });
+    } else {
+      cardsArray.forEach((card) => {
+        card.children[1].setAttribute("data-index", this.setCounter(0));
+      });
+    }
+  };
+
   renderCards = () => {
     let container = document.getElementsByClassName("section")[0];
 
@@ -54,48 +107,6 @@ class Game {
             )
           : null;
       }
-    });
-  };
-
-  init = () => {
-    let shuffledEmojiArray = this.shuffleArray(this.data);
-    this.cardsArray = shuffledEmojiArray.map((emoji) => {
-      return new Card(emoji);
-    });
-    this.startCountDown(1 * 60);
-    this.renderCards();
-  };
-
-  start = () => {
-    document.addEventListener("DOMContentLoaded", this.init);
-    this.turnCard();
-    this.checkMatch();
-    this.countMoves();
-    this.resetField();
-  };
-
-  turnCard = () => {
-    let container = document.getElementsByClassName("section")[0];
-    container.addEventListener("click", function (ev) {
-      let card = ev.target.closest(".section__card");
-
-      game.gameIsOn = true;
-      game.countDownIsOn = true;
-
-      if (!card) return;
-
-      card.classList.toggle("section__card_turned");
-
-      if (card.classList.contains("section__card_turned")) {
-        game.increaseCounter();
-        game.countMoves();
-        card.children[1].setAttribute("data-index", game.counter);
-      } else {
-        game.decreaseCounter();
-        card.children[1].setAttribute("data-index", game.counter);
-      }
-      game.checkMatch(ev);
-      game.checkResult();
     });
   };
 
@@ -114,11 +125,12 @@ class Game {
 
     if (game.counter === 3) {
       game.updateTurnedCards(noMatchCards, [
+        //обнуляем индексы в data-index, снимаем классы
         "section__card_nomatch",
         "section__card_turned",
       ]);
       game.updateTurnedCards(matchCards);
-      game.updateActiveCard(nextCard);
+      game.updateCurrentCard(nextCard);
     }
 
     if (game.counter < 2) return;
@@ -126,39 +138,25 @@ class Game {
     let turnedCardsFiltered = turnedCards.filter(
       (c) => c.children[1].getAttribute("data-index") > 0
     );
+    let [prevCard, currCard] = turnedCardsFiltered; //получаем 0 и 1 элементы массива
 
-    let prevCardAttr = turnedCardsFiltered[0].children[1].getAttribute(
-      "data-emoji-type"
-    );
-    let prevCardIdx = turnedCardsFiltered[0].children[1].getAttribute(
-      "data-index"
-    );
+    let prevCardIdx = prevCard.children[1].getAttribute("data-index");
+    let prevCardAttr = prevCard.children[1].getAttribute("data-emoji-type");
 
-    let currCardAttr = turnedCardsFiltered[1].children[1].getAttribute(
-      "data-emoji-type"
-    );
-    let currCardIdx = turnedCardsFiltered[1].children[1].getAttribute(
-      "data-index"
-    );
+    let currCardIdx = currCard.children[1].getAttribute("data-index");
+    let currCardAttr = currCard.children[1].getAttribute("data-emoji-type");
 
-    if (prevCardIdx !== 0 && currCardIdx !== 0) {
+    if (prevCardIdx !== "0" && currCardIdx !== "0") {
+      //определяем совпадения
       if (prevCardAttr === currCardAttr) {
-        turnedCardsFiltered[0].classList.add("section__card_match");
-        turnedCardsFiltered[1].classList.add("section__card_match");
+        prevCard.classList.add("section__card_match");
+        currCard.classList.add("section__card_match");
       } else {
-        turnedCardsFiltered[0].classList.add("section__card_nomatch");
-        turnedCardsFiltered[1].classList.add("section__card_nomatch");
+        prevCard.classList.add("section__card_nomatch");
+        currCard.classList.add("section__card_nomatch");
       }
     }
   };
-
-  increaseCounter = () => this.counter++;
-
-  decreaseCounter = () => this.counter--;
-
-  setCounter = (value) => (this.counter = value);
-
-  countMoves = () => this.moves++;
 
   startCountDown = (duration) => {
     let start = Date.now(),
@@ -169,6 +167,7 @@ class Game {
     function timer() {
       let display = document.getElementsByClassName("main__timer")[0];
       if (game.gameIsOn === false && game.countDownIsOn === false) {
+        //показываем таймер при старте (формат: 01:00)
         display.textContent = minutes + ":" + seconds;
       }
       diff = duration - (((Date.now() - start) / 1000) | 0);
@@ -213,9 +212,8 @@ class Game {
     ) {
       win = true;
       this.showModal(win);
-      // game.gameIsOn = false;
-      // game.countDownIsOn = false;
-      clearInterval(game.timer);
+      game.gameIsOn = false;
+      game.countDownIsOn = false;
     }
     if (
       matchCards.length < game.cardsArray.length &&
@@ -225,16 +223,15 @@ class Game {
       //проиграли в рамках игрового времени
       win = false;
       this.showModal(win);
-      // game.gameIsOn = false;
-      // game.countDownIsOn = false;
-      clearInterval(game.timer);
+      game.gameIsOn = false;
+      game.countDownIsOn = false;
     }
   };
 
-  showModal = (res) => {
+  showModal = (check) => {
     let modal = document.getElementsByClassName("modal-overlay")[0];
     let text = document.getElementsByClassName("modal-wrapper__title")[0];
-    if (res === true) {
+    if (check === true) {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
       text.textContent = "win";
@@ -242,24 +239,6 @@ class Game {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
       text.textContent = "lose";
-    }
-  };
-
-  updateActiveCard = (card) => {
-    card.children[1].setAttribute("data-index", this.setCounter(1));
-  };
-
-  updateTurnedCards = (cardsArray, clArray) => {
-    let cl = clArray || undefined;
-    if (cl) {
-      cardsArray.forEach((card) => {
-        card.children[1].setAttribute("data-index", this.setCounter(0));
-        card.classList.remove(...cl);
-      });
-    } else {
-      cardsArray.forEach((card) => {
-        card.children[1].setAttribute("data-index", this.setCounter(0));
-      });
     }
   };
 
@@ -272,10 +251,29 @@ class Game {
     btn.addEventListener("click", function () {
       modal.classList.remove("modal-overlay_show");
       modal.classList.add("modal-overlay_hide");
-      matchCards.forEach((card) => {
-        card.classList.remove("section__card_match");
-      });
+      game.updateTurnedCards(matchCards, [
+        //обнуляем индексы в data-index, снимаем классы
+        "section__card_match",
+        "section__card_turned",
+      ]);
     });
+  };
+
+  init = () => {
+    let shuffledEmojiArray = this.shuffleArray(this.data);
+    this.cardsArray = shuffledEmojiArray.map((emoji) => {
+      return new Card(emoji);
+    });
+    this.startCountDown(60);
+    this.renderCards();
+  };
+
+  start = () => {
+    document.addEventListener("DOMContentLoaded", this.init);
+    this.checkMatch();
+    this.countMoves();
+    this.resetField();
+    this.checkResult();
   };
 }
 
@@ -326,6 +324,7 @@ function countDown() {
   //   setInterval(timer, 1000);
 }
 
+/*Срабатывал при  выигрыше и проигрыше (при клике по полю)*/
 // let start = Date.now(),
 //     diff,
 //     minutes,
