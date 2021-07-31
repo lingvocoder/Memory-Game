@@ -66,6 +66,7 @@ body {
   position: relative;
   width: 100%;
   height: auto;
+
   &__timer {
     height: auto;
     text-align: center;
@@ -89,20 +90,19 @@ body {
   grid-row-gap: 25px;
   max-width: 600px;
   height: auto;
-  @include margin("auto",0);
+  @include margin("auto", 0);
   perspective: 600px;
 
   &__card {
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     @include border-radius(9px);
     background-color: #ffffff;
     cursor: pointer;
     transform-style: preserve-3d;
     transform-origin: 50% 50%;
-    transition: background-color 0.1s 0s linear, transform 0.25s 0s ease-in-out;
+    transition: background-color 0.1s 0s linear, transform 0.25s 0s ease;
     box-shadow: 1px 1px 5px rgba(0, 0, 0, .5);
 
     &_front,
@@ -110,27 +110,21 @@ body {
       position: absolute;
       width: 100%;
       height: 100%;
-      top: 0;
-      left: 0;
       @include border-radius(9px);
       backface-visibility: hidden;
     }
 
     &_front {
       border: 5px solid #ffffff;
-      z-index: $z-index / 10;
       background-image: linear-gradient(45deg, #22AB93, #19668D);
     }
 
     &_back {
-      &:before {
-        content: attr(data-emoji);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translateX(-50%) translateY(-50%) rotateY(180deg);
-        font-size: setFontSizeRem($rf-size, 75);
-      }
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateX(0) translateY(0) rotateY(180deg);
+      font-size: setFontSizeRem($rf-size, 75);
     }
 
     &_turned {
@@ -160,14 +154,17 @@ body {
   width: 100vw;
   top: 0;
   left: 0;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
+
   &_show {
     display: flex;
   }
+
   &_hide {
     display: none;
   }
 }
+
 .modal-wrapper {
   position: relative;
   display: flex;
@@ -180,29 +177,32 @@ body {
   background-color: #ffffff;
   z-index: $z-index / 2;
   padding: 30px;
+
   &__title {
     flex: 1 1 100%;
     text-align: center;
     font: {
-      size: setFontSizeRem($rf-size,48);
+      size: setFontSizeRem($rf-size, 48);
       weight: 700;
       style: normal;
     };
-    line-height: setFontSizeRem($rf-size,30);
+    line-height: setFontSizeRem($rf-size, 30);
     @include margin("bottom", 40px);
   }
+
   &__btn {
     flex: 0 1 auto;
     border: 1px solid transparent;
     padding: 10px 30px;
     cursor: pointer;
-    z-index:$z-index * 5;
+    z-index: $z-index * 5;
     @include border-radius(9px);
-    background-image: linear-gradient(90deg,#19668D, #22AB93 );
+    background-image: linear-gradient(90deg, #19668D, #22AB93);
+
     & .modal-wrapper__text {
       color: #ffffff;
       font: {
-        size: setFontSizeRem($rf-size,20);
+        size: setFontSizeRem($rf-size, 20);
         weight: 400;
       };
     }

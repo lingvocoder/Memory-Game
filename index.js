@@ -80,7 +80,7 @@ class Game {
     card.children[1].setAttribute("data-index", this.setCounter(1));
   };
 
-  updateTurnedCards = (cardsArray, clsArray) => {
+  clearTurnedCards = (cardsArray, clsArray) => {
     //заменить на clearTurnedCards
     let cls = clsArray || undefined;
     if (cls) {
@@ -100,14 +100,18 @@ class Game {
 
     this.cardsArray.forEach((card) => {
       container.append(card.element);
+      let emoji = card.emoji;
       for (const cardKey in card) {
-        cardKey !== "element"
+        cardKey !== "element" && cardKey !== "emoji"
           ? card.element.children[1].setAttribute(
               `data-${cardKey}`,
               card[cardKey]
             )
           : null;
       }
+      card.element.children[1].innerHTML = String.fromCodePoint(
+        emoji.codePointAt(0)
+      );
     });
   };
 
@@ -125,12 +129,11 @@ class Game {
     );
 
     if (game.counter === 3) {
-      game.updateTurnedCards(noMatchCards, [
-        //обнуляем индексы в data-index, снимаем классы
+      game.clearTurnedCards(noMatchCards, [
         "section__card_nomatch",
         "section__card_turned",
       ]);
-      game.updateTurnedCards(matchCards);
+      game.clearTurnedCards(matchCards);
       game.updateCurrentCard(nextCard);
     }
 
@@ -148,7 +151,6 @@ class Game {
     let currCardAttr = currCard.children[1].getAttribute("data-emoji-type");
 
     if (prevCardIdx !== "0" && currCardIdx !== "0") {
-      //определяем совпадения
       if (prevCardAttr === currCardAttr) {
         prevCard.classList.add("section__card_match");
         currCard.classList.add("section__card_match");
@@ -200,7 +202,7 @@ class Game {
 
     if (
       matchCards.length === game.cardsArray.length &&
-      game.gameIsOn === true //выиграли в рамках игрового времени
+      game.gameIsOn === true
     ) {
       win = true;
       this.showModal(win);
@@ -208,7 +210,6 @@ class Game {
       game.gameIsOn = false;
     }
     if (matchCards.length < game.cardsArray.length && game.gameIsOn === false) {
-      //проиграли в рамках игрового времени
       win = false;
       this.showModal(win);
       this.resetField();
@@ -222,11 +223,11 @@ class Game {
     if (check === true) {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
-      text.textContent = "win";
+      text.textContent = "You win";
     } else {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
-      text.textContent = "lose";
+      text.textContent = "You lose";
     }
   };
 
@@ -239,8 +240,7 @@ class Game {
     btn.addEventListener("click", function () {
       modal.classList.remove("modal-overlay_show");
       modal.classList.add("modal-overlay_hide");
-      game.updateTurnedCards(turnedCards, [
-        //обнуляем индексы в data-index, снимаем классы
+      game.clearTurnedCards(turnedCards, [
         "section__card_turned",
         "section__card_match",
         "section__card_nomatch",
@@ -279,33 +279,3 @@ let emojiArray = [
 ];
 let game = new Game(emojiArray, 0);
 game.start();
-
-function countDown() {
-  //      var start = Date.now(),
-  //   diff,
-  //       minutes,
-  //       seconds;
-  //   function timer() {
-  //     // get the number of seconds that have elapsed since
-  //     // startTimer() was called
-  //     diff = duration - (((Date.now() - start) / 1000) | 0);
-  //
-  //     // does the same job as parseInt truncates the float
-  //     minutes = (diff / 60) | 0;
-  //     seconds = (diff % 60) | 0;
-  //
-  //     minutes = minutes < 10 ? "0" + minutes : minutes;
-  //     seconds = seconds < 10 ? "0" + seconds : seconds;
-  //
-  //     display.textContent = minutes + ":" + seconds;
-  //
-  //     if (diff <= 0) {
-  //       // add one second so that the count down starts at the full duration
-  //       // example 05:00 not 04:59
-  //       start = Date.now() + 1000;
-  //     }
-  //   };
-  // // we don't want to wait a full second before the timer starts
-  //   timer();
-  //   setInterval(timer, 1000);
-}
