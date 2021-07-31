@@ -26,7 +26,7 @@ class Card {
     let currentCard = ev.target.closest(".section__card");
     if (!game.gameIsOn) {
       game.gameIsOn = true;
-      game.startCountDown(60);
+      game.startCountDown(1 * 60);
     }
 
     if (!currentCard) return;
@@ -81,7 +81,6 @@ class Game {
   };
 
   clearTurnedCards = (cardsArray, clsArray) => {
-    //заменить на clearTurnedCards
     let cls = clsArray || undefined;
     if (cls) {
       cardsArray.forEach((card) => {
@@ -142,7 +141,7 @@ class Game {
     let turnedCardsFiltered = turnedCards.filter(
       (c) => c.children[1].getAttribute("data-index") > 0
     );
-    let [prevCard, currCard] = turnedCardsFiltered; //получаем 0 и 1 элементы массива
+    let [prevCard, currCard] = turnedCardsFiltered;
 
     let prevCardIdx = prevCard.children[1].getAttribute("data-index");
     let prevCardAttr = prevCard.children[1].getAttribute("data-emoji-type");
@@ -223,11 +222,11 @@ class Game {
     if (check === true) {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
-      text.textContent = "You win";
+      text.textContent = "Win";
     } else {
       modal.classList.remove("modal-overlay_hide");
       modal.classList.add("modal-overlay_show");
-      text.textContent = "You lose";
+      text.textContent = "Lose";
     }
   };
 
@@ -237,6 +236,8 @@ class Game {
     let turnedCards = Array.from(
       document.getElementsByClassName("section__card_turned")
     );
+    let container = document.getElementsByClassName("section")[0];
+
     btn.addEventListener("click", function () {
       modal.classList.remove("modal-overlay_show");
       modal.classList.add("modal-overlay_hide");
@@ -245,6 +246,13 @@ class Game {
         "section__card_match",
         "section__card_nomatch",
       ]);
+
+      setTimeout(function () {
+        let reshuffledCards = game.shuffleArray(turnedCards);
+        reshuffledCards.forEach((card) => {
+          container.append(card);
+        });
+      }, 200);
     });
   };
 
