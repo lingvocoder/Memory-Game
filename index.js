@@ -166,7 +166,7 @@ class Game {
       minutes,
       seconds;
 
-    this.timer = setInterval(function () {
+    function timer() {
       let display = document.getElementsByClassName("main__timer")[0];
       if (game.gameIsOn === false) {
         display.textContent = minutes + ":" + seconds;
@@ -190,7 +190,10 @@ class Game {
       if (game.gameIsOn === false) {
         clearInterval(game.timer);
       }
-    }, 0);
+    }
+
+    timer();
+    this.timer = setInterval(timer, 0);
   };
 
   checkResult = () => {
