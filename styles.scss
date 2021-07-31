@@ -161,7 +161,6 @@ body {
   top: 0;
   left: 0;
   background-color: rgba(0,0,0,0.6);
-  z-index: $z-index / 2;
   &_show {
     display: flex;
   }
@@ -197,7 +196,7 @@ body {
     border: 1px solid transparent;
     padding: 10px 30px;
     cursor: pointer;
-    z-index:$z-index;
+    z-index:$z-index * 5;
     @include border-radius(9px);
     background-image: linear-gradient(90deg,#19668D, #22AB93 );
     & .modal-wrapper__text {

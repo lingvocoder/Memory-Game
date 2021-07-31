@@ -24,15 +24,16 @@ class Card {
 
   turnCard(ev) {
     let currentCard = ev.target.closest(".section__card");
-    game.gameIsOn = true;
-    game.countDownIsOn = true;
+    if (!game.gameIsOn) {
+      game.gameIsOn = true;
+      game.startCountDown(60);
+    }
 
     if (!currentCard) return;
     currentCard.classList.toggle("section__card_turned");
 
     if (currentCard.classList.contains("section__card_turned")) {
       game.increaseCounter();
-      game.countMoves();
       const { counter } = game;
       currentCard.children[1].setAttribute("data-index", String(counter));
     } else {
@@ -40,12 +41,13 @@ class Card {
       const { counter } = game;
       currentCard.children[1].setAttribute("data-index", String(counter));
     }
+    game.checkMatch(currentCard);
   }
 
   handleClick() {
     let container = document.getElementsByClassName("section")[0];
     container.addEventListener("click", this.turnCard);
-    container.addEventListener("click", game.checkMatch);
+    container.addEventListener("click", game.checkResult);
   }
 }
 
@@ -53,9 +55,9 @@ class Game {
   constructor(data = [], counter = 0, moves = 0) {
     this.data = data;
     this.counter = counter;
-    this.moves = moves;
     this.gameIsOn = false;
-    this.countDownIsOn = false;
+    this.timer = null;
+    this.cardsArray = [];
   }
 
   shuffleArray(arr) {
@@ -74,13 +76,12 @@ class Game {
 
   setCounter = (value) => (this.counter = value);
 
-  countMoves = () => this.moves++;
-
   updateCurrentCard = (card) => {
     card.children[1].setAttribute("data-index", this.setCounter(1));
   };
 
   updateTurnedCards = (cardsArray, clsArray) => {
+    //заменить на clearTurnedCards
     let cls = clsArray || undefined;
     if (cls) {
       cardsArray.forEach((card) => {
@@ -110,8 +111,8 @@ class Game {
     });
   };
 
-  checkMatch = (ev) => {
-    let nextCard = ev.target.closest(".section__card");
+  checkMatch = (card) => {
+    let nextCard = card;
 
     let noMatchCards = Array.from(
       document.getElementsByClassName("section__card_nomatch")
@@ -164,10 +165,9 @@ class Game {
       minutes,
       seconds;
 
-    function timer() {
+    this.timer = setInterval(function () {
       let display = document.getElementsByClassName("main__timer")[0];
-      if (game.gameIsOn === false && game.countDownIsOn === false) {
-        //показываем таймер при старте (формат: 01:00)
+      if (game.gameIsOn === false) {
         display.textContent = minutes + ":" + seconds;
       }
       diff = duration - (((Date.now() - start) / 1000) | 0);
@@ -179,22 +179,17 @@ class Game {
       seconds = seconds < 10 ? "0" + seconds : seconds;
 
       display.textContent = minutes + ":" + seconds;
-      console.log(
-        `game:${game.gameIsOn} countDown:${game.countDownIsOn} timer: ${diff}`
-      );
 
       if (diff <= 0) {
         minutes = 0;
         seconds = 0;
         game.gameIsOn = false;
-        game.countDownIsOn = false;
-        start = Date.now() + 1000;
-        clearInterval(timer);
+        game.checkResult();
       }
-    }
-
-    timer();
-    setInterval(timer, 1000);
+      if (game.gameIsOn === false) {
+        clearInterval(game.timer);
+      }
+    }, 0);
   };
 
   checkResult = () => {
@@ -202,29 +197,22 @@ class Game {
     let matchCards = Array.from(
       document.getElementsByClassName("section__card_match")
     );
-    let turnedCards = Array.from(
-      document.getElementsByClassName("section__card_turned")
-    );
+
     if (
       matchCards.length === game.cardsArray.length &&
-      game.gameIsOn === true &&
-      game.countDownIsOn === true //выиграли в рамках игрового времени
+      game.gameIsOn === true //выиграли в рамках игрового времени
     ) {
       win = true;
       this.showModal(win);
+      this.resetField();
       game.gameIsOn = false;
-      game.countDownIsOn = false;
     }
-    if (
-      matchCards.length < game.cardsArray.length &&
-      game.gameIsOn === false &&
-      game.countDownIsOn === false
-    ) {
+    if (matchCards.length < game.cardsArray.length && game.gameIsOn === false) {
       //проиграли в рамках игрового времени
       win = false;
       this.showModal(win);
+      this.resetField();
       game.gameIsOn = false;
-      game.countDownIsOn = false;
     }
   };
 
@@ -245,16 +233,17 @@ class Game {
   resetField = () => {
     let btn = document.getElementsByClassName("modal-wrapper__btn")[0];
     let modal = document.getElementsByClassName("modal-overlay")[0];
-    let matchCards = Array.from(
-      document.getElementsByClassName("section__card_match")
+    let turnedCards = Array.from(
+      document.getElementsByClassName("section__card_turned")
     );
     btn.addEventListener("click", function () {
       modal.classList.remove("modal-overlay_show");
       modal.classList.add("modal-overlay_hide");
-      game.updateTurnedCards(matchCards, [
+      game.updateTurnedCards(turnedCards, [
         //обнуляем индексы в data-index, снимаем классы
-        "section__card_match",
         "section__card_turned",
+        "section__card_match",
+        "section__card_nomatch",
       ]);
     });
   };
@@ -264,15 +253,12 @@ class Game {
     this.cardsArray = shuffledEmojiArray.map((emoji) => {
       return new Card(emoji);
     });
-    this.startCountDown(60);
     this.renderCards();
   };
 
   start = () => {
     document.addEventListener("DOMContentLoaded", this.init);
     this.checkMatch();
-    this.countMoves();
-    this.resetField();
     this.checkResult();
   };
 }
@@ -323,42 +309,3 @@ function countDown() {
   //   timer();
   //   setInterval(timer, 1000);
 }
-
-/*Срабатывал при  выигрыше и проигрыше (при клике по полю)*/
-// let start = Date.now(),
-//     diff,
-//     minutes,
-//     seconds;
-//
-// this.timer = setInterval(function () {
-//   game.countDownIsOn = true;
-//   game.gameIsOn = true;
-//   let display = document.getElementsByClassName("main__timer")[0];
-//
-//   if (game.gameIsOn === false && game.countDownIsOn === false) {
-//     display.textContent = minutes + ":" + seconds;
-//   }
-//   diff = duration - (((Date.now() - start) / 1000) | 0);
-//
-//   minutes = (diff / 60) | 0;
-//   seconds = diff % 60 | 0;
-//
-//   minutes = minutes < 10 ? "0" + minutes : minutes;
-//   seconds = seconds < 10 ? "0" + seconds : seconds;
-//
-//   display.textContent = minutes + ":" + seconds;
-//   console.log(game.gameIsOn + ":" + diff);
-//
-//   if (diff <= 0) {
-//     add one second so that the count down starts at the full duration
-//     example 05:00 not 04:59
-// minutes = 0;
-// seconds = 0;
-// start = Date.now() + 1000;
-// clearInterval(game.timer);
-// game.checkResult();
-// game.gameIsOn = false;
-// game.countDownIsOn = false;
-// console.log(game.gameIsOn + ":" + game.gameIsOn + ":" + diff);
-// }
-// }, 1000);
