@@ -52,7 +52,7 @@ class Card {
 }
 
 class Game {
-  constructor(data = [], counter = 0, moves = 0) {
+  constructor(data = [], counter = 0) {
     this.data = data;
     this.counter = counter;
     this.gameIsOn = false;
@@ -219,15 +219,17 @@ class Game {
   showModal = (check) => {
     let modal = document.getElementsByClassName("modal-overlay")[0];
     let text = document.getElementsByClassName("modal-wrapper__title")[0];
-    if (check === true) {
-      modal.classList.remove("modal-overlay_hide");
-      modal.classList.add("modal-overlay_show");
-      text.textContent = "Win";
-    } else {
-      modal.classList.remove("modal-overlay_hide");
-      modal.classList.add("modal-overlay_show");
-      text.textContent = "Lose";
-    }
+    setTimeout(function () {
+      if (check === true) {
+        modal.classList.remove("modal-overlay_hide");
+        modal.classList.add("modal-overlay_show");
+        text.textContent = "Win";
+      } else {
+        modal.classList.remove("modal-overlay_hide");
+        modal.classList.add("modal-overlay_show");
+        text.textContent = "Lose";
+      }
+    }, 250);
   };
 
   resetField = () => {
@@ -262,6 +264,7 @@ class Game {
       return new Card(emoji);
     });
     this.renderCards();
+    game.startCountDown(1 * 60);
   };
 
   start = () => {
