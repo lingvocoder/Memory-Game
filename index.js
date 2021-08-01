@@ -1,6 +1,6 @@
 class Card {
   constructor({ emoji = "", type = "", index = 0 } = {}) {
-    this["emoji-type"] = type;
+    this.type = type;
     this.emoji = emoji;
     this.index = index;
     this.render();
@@ -96,18 +96,15 @@ class Game {
     let container = document.getElementsByClassName("section")[0];
 
     this.cardsArray.forEach((card) => {
+      let cardObjEntries = Object.entries(card).filter(
+        (e) => e.indexOf("element") && e.indexOf("emoji")
+      );
       container.append(card.element);
-      let emoji = card.emoji;
-      for (const cardKey in card) {
-        cardKey !== "element" && cardKey !== "emoji"
-          ? card.element.children[1].setAttribute(
-              `data-${cardKey}`,
-              card[cardKey]
-            )
-          : null;
+      for (const [key, value] of cardObjEntries) {
+        card.element.children[1].setAttribute(`data-${key}`, String(value));
       }
       card.element.children[1].innerHTML = String.fromCodePoint(
-        emoji.codePointAt(0)
+        card.emoji.codePointAt(0)
       );
     });
   };
@@ -142,10 +139,10 @@ class Game {
     let [prevCard, currCard] = turnedCardsFiltered;
 
     let prevCardIdx = prevCard.children[1].getAttribute("data-index");
-    let prevCardAttr = prevCard.children[1].getAttribute("data-emoji-type");
+    let prevCardAttr = prevCard.children[1].getAttribute("data-type");
 
     let currCardIdx = currCard.children[1].getAttribute("data-index");
-    let currCardAttr = currCard.children[1].getAttribute("data-emoji-type");
+    let currCardAttr = currCard.children[1].getAttribute("data-type");
 
     if (prevCardIdx !== "0" && currCardIdx !== "0") {
       if (prevCardAttr === currCardAttr) {
