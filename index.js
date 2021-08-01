@@ -34,12 +34,10 @@ class Card {
 
     if (currentCard.classList.contains("section__card_turned")) {
       game.increaseCounter();
-      const { counter } = game;
-      currentCard.children[1].setAttribute("data-index", String(counter));
+      currentCard.children[1].setAttribute("data-index", String(game.counter));
     } else {
       game.decreaseCounter();
-      const { counter } = game;
-      currentCard.children[1].setAttribute("data-index", String(counter));
+      currentCard.children[1].setAttribute("data-index", String(game.counter));
     }
     game.checkMatch(currentCard);
   }
