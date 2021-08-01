@@ -34,6 +34,7 @@ class Card {
 
     if (currentCard.classList.contains("section__card_turned")) {
       game.increaseCounter();
+      game.playFlipSound();
       currentCard.children[1].setAttribute("data-index", String(game.counter));
     } else {
       game.decreaseCounter();
@@ -77,6 +78,12 @@ class Game {
   updateCurrentCard = (card) => {
     card.children[1].setAttribute("data-index", this.setCounter(1));
   };
+
+  playFlipSound(){
+    let flipSound = new Audio("assets/flip.wav");
+    flipSound.volume = 0.5;
+    flipSound.play();
+  }
 
   clearTurnedCards = (cardsArray, clsArray) => {
     let cls = clsArray || undefined;
@@ -248,8 +255,7 @@ class Game {
       ]);
 
       setTimeout(function () {
-        let reshuffledCards = game.shuffleArray(turnedCards);
-        reshuffledCards.forEach((card) => {
+        game.shuffleArray(turnedCards).forEach((card) => {
           container.append(card);
         });
       }, 200);
