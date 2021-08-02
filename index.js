@@ -1,8 +1,8 @@
 class Card {
-  constructor({ emoji = "", type = "", index = 0 } = {}) {
+  constructor({ emoji = "", type = "" } = {}) {
     this.type = type;
     this.emoji = emoji;
-    this.index = index;
+    this.index = 0;
     this.render();
     this.handleClick();
   }
@@ -52,7 +52,7 @@ class Card {
 
 class Game {
   constructor(data = [], counter = 0) {
-    this.data = data;
+    this.data = [...data];
     this.counter = counter;
     this.gameIsOn = false;
     this.timer = null;
@@ -86,7 +86,7 @@ class Game {
   }
 
   clearTurnedCards = (cardsArray, clsArray) => {
-    let cls = clsArray || undefined;
+    let cls = clsArray || [];
     if (cls) {
       cardsArray.forEach((card) => {
         card.children[1].setAttribute("data-index", this.setCounter(0));
