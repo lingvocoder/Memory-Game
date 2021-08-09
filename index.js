@@ -79,7 +79,7 @@ class Game {
     card.children[1].setAttribute("data-index", this.setCounter(1));
   };
 
-  playFlipSound(){
+  playFlipSound() {
     let flipSound = new Audio("assets/flip.wav");
     flipSound.volume = 0.5;
     flipSound.play();
