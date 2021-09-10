@@ -183,14 +183,17 @@ body {
   }
 
   &__letter {
+    display: inline-block;
     font: {
       size: setFontSizeRem($rf-size, 48);
       weight: 700;
       style: normal;
     };
-
     &_animated {
-      animation: stretchUpDown 3s linear infinite;
+      animation-name: stretchUpDown;
+      animation-timing-function: linear;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite;
     }
   }
 
@@ -219,20 +222,11 @@ body {
 }
 
 @keyframes stretchUpDown {
-  0% {
-    top: -5%;
-    transform: scale(1.2);
+  30% {
+    transform: translateY(-15px) scaleY(1.5);
   }
-  25% {
-    top: 105%;
-    transform: scaleY(0.9);
+  80% {
+    transform: translateY(15px) scaleY(0.9);
   }
-  75% {
-    top: -5%;
-    transform: scale(1.2);
-  }
-  90% {
-    top: 105%;
-    transform: scale(0.9);
-  }
+
 }

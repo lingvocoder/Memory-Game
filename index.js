@@ -227,7 +227,7 @@ class Game {
     let titleWrapper = document.getElementsByClassName(
       "modal-wrapper__title"
     )[0];
-    let messageText = check === true ? "win" : "lose";
+    let messageText = check === true ? "Win" : "Lose";
     titleWrapper.innerHTML = messageText
       .split("")
       .map((letter) => {
@@ -235,8 +235,10 @@ class Game {
       })
       .join("");
     setTimeout(function () {
-      titleWrapper.childNodes.forEach((node) => {
-        node.classList.add("letter_animated");
+      titleWrapper.childNodes.forEach((node, idx) => {
+        setTimeout(function () {
+          node.classList.add("modal-wrapper__letter_animated");
+        }, idx * 150);
       });
       if (check) {
         modal.classList.toggle("modal-overlay_hide");

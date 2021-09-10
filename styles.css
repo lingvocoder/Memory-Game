@@ -136,11 +136,15 @@ body {
     text-align: center;
     margin-bottom: 40px; }
   .modal-wrapper__letter {
+    display: inline-block;
     font-size: 3rem;
     font-weight: 700;
     font-style: normal; }
     .modal-wrapper__letter_animated {
-      animation: stretchUpDown 3s linear infinite; }
+      animation-name: stretchUpDown;
+      animation-timing-function: linear;
+      animation-duration: 1.5s;
+      animation-iteration-count: infinite; }
   .modal-wrapper__btn {
     flex: 0 1 auto;
     border: 1px solid transparent;
@@ -158,17 +162,9 @@ body {
       font-weight: 400; }
 
 @keyframes stretchUpDown {
-  0% {
-    top: -5%;
-    transform: scale(1.2); }
-  25% {
-    top: 105%;
-    transform: scaleY(0.9); }
-  75% {
-    top: -5%;
-    transform: scale(1.2); }
-  90% {
-    top: 105%;
-    transform: scale(0.9); } }
+  30% {
+    transform: translateY(-15px) scaleY(1.5); }
+  80% {
+    transform: translateY(15px) scaleY(0.9); } }
 
 /*# sourceMappingURL=styles.css.map */
