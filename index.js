@@ -236,7 +236,7 @@ class Game {
       .join("");
     setTimeout(function () {
       titleWrapper.childNodes.forEach((node, idx) => {
-        setTimeout(function () {
+        setTimeout(() => {
           node.classList.add("modal-wrapper__letter_animated");
         }, idx * 150);
       });
