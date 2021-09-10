@@ -103,6 +103,7 @@ class Game {
     let container = document.getElementsByClassName("section")[0];
 
     this.cardsArray.forEach((card) => {
+      console.log(card);
       let cardObjEntries = Object.entries(card).filter(
         (e) => e.indexOf("element") && e.indexOf("emoji")
       );
@@ -223,16 +224,24 @@ class Game {
 
   showModal = (check) => {
     let modal = document.getElementsByClassName("modal-overlay")[0];
-    let text = document.getElementsByClassName("modal-wrapper__title")[0];
+    let titleWrapper = document.getElementsByClassName(
+      "modal-wrapper__title"
+    )[0];
+    let messageText = check === true ? "win" : "lose";
+    titleWrapper.innerHTML = messageText
+      .split("")
+      .map((letter) => {
+        return `<span class="modal-wrapper__letter">${letter}</span>`;
+      })
+      .join("");
     setTimeout(function () {
-      if (check === true) {
-        modal.classList.remove("modal-overlay_hide");
-        modal.classList.add("modal-overlay_show");
-        text.textContent = "Win";
+      titleWrapper.childNodes.forEach((node) => {
+        node.classList.add("letter_animated");
+      });
+      if (check) {
+        modal.classList.toggle("modal-overlay_hide");
       } else {
-        modal.classList.remove("modal-overlay_hide");
-        modal.classList.add("modal-overlay_show");
-        text.textContent = "Lose";
+        modal.classList.toggle("modal-overlay_hide");
       }
     }, 250);
   };
@@ -246,7 +255,6 @@ class Game {
     let container = document.getElementsByClassName("section")[0];
 
     btn.addEventListener("click", function () {
-      modal.classList.remove("modal-overlay_show");
       modal.classList.add("modal-overlay_hide");
       game.clearTurnedCards(turnedCards, [
         "section__card_turned",

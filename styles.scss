@@ -156,13 +156,10 @@ body {
   left: 0;
   background-color: rgba(0, 0, 0, 0.6);
 
-  &_show {
-    display: flex;
-  }
-
   &_hide {
     display: none;
   }
+
 }
 
 .modal-wrapper {
@@ -180,14 +177,21 @@ body {
 
   &__title {
     flex: 1 1 100%;
+    line-height: setFontSizeRem($rf-size, 30);
     text-align: center;
+    @include margin("bottom", 40px);
+  }
+
+  &__letter {
     font: {
       size: setFontSizeRem($rf-size, 48);
       weight: 700;
       style: normal;
     };
-    line-height: setFontSizeRem($rf-size, 30);
-    @include margin("bottom", 40px);
+
+    &_animated {
+      animation: stretchUpDown 3s linear infinite;
+    }
   }
 
   &__btn {
@@ -211,5 +215,24 @@ body {
         weight: 400;
       };
     }
+  }
+}
+
+@keyframes stretchUpDown {
+  0% {
+    top: -5%;
+    transform: scale(1.2);
+  }
+  25% {
+    top: 105%;
+    transform: scaleY(0.9);
+  }
+  75% {
+    top: -5%;
+    transform: scale(1.2);
+  }
+  90% {
+    top: 105%;
+    transform: scale(0.9);
   }
 }

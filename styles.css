@@ -115,8 +115,6 @@ body {
   top: 0;
   left: 0;
   background-color: rgba(0, 0, 0, 0.6); }
-  .modal-overlay_show {
-    display: flex; }
   .modal-overlay_hide {
     display: none; }
 
@@ -134,12 +132,15 @@ body {
   padding: 30px; }
   .modal-wrapper__title {
     flex: 1 1 100%;
+    line-height: 1.875rem;
     text-align: center;
+    margin-bottom: 40px; }
+  .modal-wrapper__letter {
     font-size: 3rem;
     font-weight: 700;
-    font-style: normal;
-    line-height: 1.875rem;
-    margin-bottom: 40px; }
+    font-style: normal; }
+    .modal-wrapper__letter_animated {
+      animation: stretchUpDown 3s linear infinite; }
   .modal-wrapper__btn {
     flex: 0 1 auto;
     border: 1px solid transparent;
@@ -155,5 +156,19 @@ body {
       color: #ffffff;
       font-size: 1.25rem;
       font-weight: 400; }
+
+@keyframes stretchUpDown {
+  0% {
+    top: -5%;
+    transform: scale(1.2); }
+  25% {
+    top: 105%;
+    transform: scaleY(0.9); }
+  75% {
+    top: -5%;
+    transform: scale(1.2); }
+  90% {
+    top: 105%;
+    transform: scale(0.9); } }
 
 /*# sourceMappingURL=styles.css.map */
