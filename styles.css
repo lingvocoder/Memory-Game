@@ -137,6 +137,7 @@ body {
     margin-bottom: 40px; }
   .modal-wrapper__letter {
     display: inline-block;
+    will-change: transform;
     font-size: 3rem;
     font-weight: 700;
     font-style: normal; }
@@ -163,8 +164,8 @@ body {
 
 @keyframes stretchUpDown {
   30% {
-    transform: translateY(-15px) scaleY(1.5); }
+    transform: translateY(-15px) scaleY(1.5) scaleX(0.8); }
   80% {
-    transform: translateY(15px) scaleY(0.9); } }
+    transform: translateY(15px) scaleY(0.9) scaleX(1.2); } }
 
 /*# sourceMappingURL=styles.css.map */

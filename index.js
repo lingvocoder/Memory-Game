@@ -238,13 +238,9 @@ class Game {
       titleWrapper.childNodes.forEach((node, idx) => {
         setTimeout(() => {
           node.classList.add("modal-wrapper__letter_animated");
-        }, idx * 150);
+        }, idx * 200);
       });
-      if (check) {
-        modal.classList.toggle("modal-overlay_hide");
-      } else {
-        modal.classList.toggle("modal-overlay_hide");
-      }
+      modal.classList.toggle("modal-overlay_hide");
     }, 250);
   };
 
