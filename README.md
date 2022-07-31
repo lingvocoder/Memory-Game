@@ -2,7 +2,7 @@
 Memory game for Yandex/MIPT on coursera
 This is part 3 of the final project of the specialization **"Interfaces: HTML and JavaScript"** from partner the Moscow Institute of Physics and Technology, Yandex & E-Learning Development Fundon on coursera.
 The game is written in vanilla JS, with the use of Class syntax. The 'logic' is based on the idea 
-that there are only 3 cards active on each move.We add/remove classes to these cards. Thus, the usage of the global counter 
+that there are only 3 active cards on each move.We add/remove classes to these cards. Thus, the usage of the global counter 
 which keeps track of clicks.:monkey_face:,:monkey_face: > match :heavy_check_mark:,:cat:,:mouse: > no match :x:
 
 # Memory Game
